@@ -22,6 +22,7 @@ sudo sed -i 's/APACHE_RUN_GROUP=.*/APACHE_RUN_GROUP=vagrant/g' /etc/apache2/envv
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password password"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password password"
 sudo apt-get install --yes mysql-server
+mysql -u root -ppassword -e "CREATE SCHEMA reservationio"
 
 # Install PHP 5
 sudo apt-get install --yes php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-mbstring php7.0-curl php7.0-xml
