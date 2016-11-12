@@ -11,6 +11,16 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Group all API Routes.
+Route::group( [ 'prefix' => 'api' ], function() {
+
+	// Group API V1.
+	Route::group( [ 'prefix' => 'v1' ], function() {
+
+		// Resource User entity.
+		Route::resource( 'users', 'UserController', [
+			'only' => [ 'store', 'show', 'update', 'destroy' ]
+		] );
+	});
+
 });
