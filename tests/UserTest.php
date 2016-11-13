@@ -9,7 +9,8 @@ class UserTest extends TestCase
     protected $userMock;
 
     /**
-     * Test to confirm response status code when at least a field is missing. Also confirm user router exists.
+     * Test to confirm response status code when at least a field is missing. 
+     * Also confirm user router exists.
      *
      * @return void
      */

@@ -21,6 +21,14 @@ Route::group( [ 'prefix' => 'api' ], function() {
 		Route::resource( 'users', 'UserController', [
 			'only' => [ 'store', 'show', 'update', 'destroy' ]
 		] );
+
+		Route::get('users/{id}/reservations', 'ReservationController@show');
+
+
+		// Resource Reservation.
+		Route::resource( 'reservations', 'ReservationController', [
+			'only' => [ 'store', 'destroy' ]
+		] );
 	});
 
 });

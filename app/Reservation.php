@@ -15,4 +15,8 @@ class Reservation extends Model
         'user_id_host',
         'user_id_guest'
     ];
+
+    public function guest() {
+        return $this->hasOne('App\User', 'id', 'user_id_guest');
+    }
 }
