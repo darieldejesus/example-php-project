@@ -20,4 +20,15 @@ class User extends Model
         'name',
         'email'
     ];
+
+    /**
+     * Reservations that belong to the user.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function reservations() {
+        return $this->hasMany('App\Reservation',
+            'user_id_host',
+            'id'
+        );
+    }
 }
