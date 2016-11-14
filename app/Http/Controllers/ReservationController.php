@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Http\Requests;
-use Validator;
-use App\User;
 use App\Reservation;
+use App\User;
+use Illuminate\Http\Request;
+use Validator;
 
 class ReservationController extends Controller
 {
