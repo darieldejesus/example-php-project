@@ -23,7 +23,7 @@ Route::group( [ 'prefix' => 'api' ], function() {
 		] );
 
 		Route::get('users/{id}/reservations', 'ReservationController@show');
-
+		Route::get('users/reservations/{id}', 'UserController@recommendation');
 
 		// Resource Reservation.
 		Route::resource( 'reservations', 'ReservationController', [

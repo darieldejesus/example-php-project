@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -90,4 +91,33 @@ class UserTest extends TestCase
     //     $this->post('/api/v1/users', $userDataWithExistingEmail)
     //          ->seeJsonEquals($responseJSON);
     // }
+
+    public function test_get_user_arround_coordinates_empty_param() {
+        $param = [];
+        $result = User::getUsersAroundCoordinates($param);
+        $this->assertFalse($result);
+    }
+
+
+    public function test_get_user_arround_coordinates_wrong_param() {
+        $param = 'this_is_a_test';
+        $result = User::getUsersAroundCoordinates($param);
+        $this->assertFalse($result);
+    }
+
+
+    public function test_get_user_arround_coordinates_array_empty_property() {
+        $param = [
+            'latitude' => [
+                'min' => [],
+                'max' => []
+            ],
+            'longitude' => [
+                'min' => [],
+                'max' => []
+            ],
+        ];
+        $result = User::getUsersAroundCoordinates($param);
+        $this->assertFalse($result);
+    }
 }
