@@ -10,7 +10,14 @@ namespace App\Helpers;
  */
 class ResponseFormatter {
 
+    /** 
+     * @var array $responseArray Array which contains response data 
+     */
     private $responseArray;
+
+    /**
+     * @var array $statusNames Array which has the statuses codes and names.
+     */
     private $statusNames = [
         200 => 'OK',
         201 => 'Created',
@@ -19,6 +26,12 @@ class ResponseFormatter {
         409 => 'Conflict'
     ];
 
+    /**
+     * Construct that can receive the data you want to return.
+     *
+     * @param mixed $responseData Data you want to return.
+     * @return void
+     */
     public function __construct($responseData = true) {
         // Default response array.
         $this->responseArray = [
