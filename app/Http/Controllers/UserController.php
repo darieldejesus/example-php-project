@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
+use App\Helpers\GeoCoordinate;
 use App\Http\Requests;
-use Validator;
 use App\User;
-
+use Illuminate\Http\Request;
+use Validator;
+use DB;
 /**
  * Class to handle Users.
  */
@@ -217,5 +217,57 @@ class UserController extends Controller
                 'response' => true
             ]);
         }
+    }
+
+    /**
+     * Get users arround range of a given user.
+     *
+     * @param  int $id User ID to be consulted.
+     * @return \Illuminate\Http\Response
+     */
+    public function recommendation($id) {
+        $validator = Validator::make(['id' => $id], [
+            'id'   => 'required|integer|exists:users'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'code'     => 400,
+                'status'   => 'Bad request',
+                'message'  => 'error',
+                'response' => [
+                    'errorCode'    => 400,
+                    'errorMessage' => 'User not found.'
+                ]
+            ], 400);
+        }
+        // Get the user and its coordinate.
+        $user = User::find($id);
+        $lat = $user->latitude;
+        $lon = $user->longitude;
+
+        // After obtain the coordinates range (min-max),
+        // Get the users by this range.
+        $coordinates = GeoCoordinate::getBoundingCoordinates($lat, $lon);
+
+        $users = User::getUsersAroundCoordinates($coordinates);
+        if ($users->isEmpty()) {
+            return response()->json([
+                'code'     => 400,
+                'status'   => 'Bad request',
+                'message'  => 'error',
+                'response' => [
+                    'errorCode'    => 400,
+                    'errorMessage' => 'No users in the range.'
+                ]
+            ], 400);
+        }
+        // Extracts IDs from result array.
+        $userIds = array_pluck($users->toArray(), 'id');
+        return response()->json([
+            'code'     => 200,
+            'status'   => 'ok',
+            'message'  => 'found',
+            'response' => ['user_ids' => $userIds]
+        ]);
     }
 }
