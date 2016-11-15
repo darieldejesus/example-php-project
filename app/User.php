@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model as Model;
-use DB;
+
 class User extends Model
 {
     /**
