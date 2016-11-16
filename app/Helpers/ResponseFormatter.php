@@ -50,6 +50,7 @@ class ResponseFormatter {
      */
     public function withMessage($message) {
         $this->responseArray['message'] = $message;
+        return $this;
     }
 
     /**
@@ -58,7 +59,7 @@ class ResponseFormatter {
      * @param mixed $data What do you want to return in 'response'.
      * @return App\Helpers\ResponseFormatter Instance of this class.
      */
-    public function returnData($data) {
+    public function withReturnData($data) {
         $this->responseArray['response'] = $data;
         return $this;
     }
@@ -132,5 +133,27 @@ class ResponseFormatter {
      */
     public function toArray() {
         return $this->responseArray;
+    }
+
+    /**
+     * Returns a response object.
+     *
+     * @return Illuminate\Http\JsonResponse Parsed response.
+     */
+    public function parse() {
+        return response()->json($this->responseArray, 
+                                $this->responseArray['code']);
+    }
+
+    /**
+     * Returns a new ResponseFormatter instance.
+     *
+     * @param mixed $data Data you want to return in the response.
+     * @return App\Helpers\ResponseFormatter Instance of this class.
+     */
+    public static function withData($data) {
+        $response = new ResponseFormatter();
+        $response->withReturnData($data);
+        return $response;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\GeoCoordinate;
+use App\Helpers\ResponseFormatter as RF;
 use App\Http\Requests;
 use App\User;
 use Illuminate\Http\Request;
@@ -46,37 +47,23 @@ class UserController extends Controller
             'email'      => 'required'
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'Please, check required fields.'
-                ]
-            ], 400);
-        }
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Please, check required fields.')
+                     ->parse();
+         }
 
         $exists = $this->User::where('email', $data['email'])->first();
         if ($exists) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'User email already exists.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withConflict()
+                     ->withMessage('User email already exists.')
+                     ->parse();
         }
 
         $user = $this->User::create($data);
-        return response()->json([
-            'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'success',
-            'response' => $user->toArray()
-        ]);
+        return RF::withData($user->toArray())
+                 ->parse();
     }
 
     /**
@@ -89,23 +76,14 @@ class UserController extends Controller
     {
         $user = $this->User::find((int) $id);
         if (!$user) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'User not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('User not found.')
+                     ->parse();
         }
 
-        return response()->json([
-            'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'success',
-            'response' => $user->toArray()
-        ]);
+        return RF::withData($user->toArray())
+                 ->parse();
     }
 
     /**
@@ -119,15 +97,10 @@ class UserController extends Controller
     {
         $user = $this->User::find((int) $id);
         if (!$user) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'User not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('User not found.')
+                     ->parse();
         }
 
         $data = $request->all();
@@ -142,50 +115,31 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'Values cannot be empty.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Please, verify required fields.')
+                     ->parse();
         }
 
         if (array_key_exists('email', $data)) {
             $exists = $this->User::where('email', $data['email'])->first();
             if ($exists && $exists->id != $id) {
-                return response()->json([
-                    'code'     => 400,
-                    'status'   => 'Bad request',
-                    'message'  => 'error',
-                    'response' => [
-                        'errorCode' => 400,
-                        'errorMessage' => 'Email already exists.'
-                    ]
-                ], 400);
+                return RF::withData(false)
+                     ->withConflict()
+                     ->withMessage('User email already exists.')
+                     ->parse();
             }
         }
 
         $processed = $user->update($data);
         if ($processed !== TRUE) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'Could not update this user.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Could not update this user.')
+                     ->parse();
         } else {
-            return response()->json([
-                'code'     => 200,
-                'status'   => 'ok',
-                'message'  => 'updated',
-                'response' => $user->toArray()
-            ]);
+            return RF::withData($user->toArray())
+                     ->parse();
         }
     }
 
@@ -199,35 +153,21 @@ class UserController extends Controller
     {
         $user = $this->User::find((int) $id);
         if (!$user) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'User not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('User not found.')
+                     ->parse();
         }
 
         $deleted = $user->delete();
         if ($deleted !== TRUE) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'Could not dalete this user.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Could not delete this user.')
+                     ->parse();
         } else {
-            return response()->json([
-                'code'     => 200,
-                'status'   => 'ok',
-                'message'  => 'deleted',
-                'response' => true
-            ]);
+            return RF::withData(true)
+                     ->parse();
         }
     }
 
@@ -242,15 +182,10 @@ class UserController extends Controller
             'id'   => 'required|integer|exists:users'
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'User not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('User not found.')
+                     ->parse();
         }
         // Get the user and its coordinate.
         $user = User::find($id);
@@ -263,23 +198,14 @@ class UserController extends Controller
 
         $users = User::getUsersAroundCoordinates($coordinates);
         if ($users->isEmpty()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'No users in the range.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('No data in range.')
+                     ->parse();
         }
         // Extracts IDs from result array.
         $userIds = array_pluck($users->toArray(), 'id');
-        return response()->json([
-            'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'found',
-            'response' => ['user_ids' => $userIds]
-        ]);
+        return RF::withData(['user_ids' => $userIds])
+                 ->parse();
     }
 }

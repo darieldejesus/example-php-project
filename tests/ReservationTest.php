@@ -52,12 +52,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             "code"     => 400,
-            "status"   => "Bad request",
-            "message"  => "error",
-            "response" => [
-                "errorCode"    => 400,
-                "errorMessage" => "Check required fields and host id."
-            ]
+            "status"   => "Bad Request",
+            "message"  => "Please, verify required fields.",
+            "response" => false
         ];
 
         $this->post('/api/v1/reservations', $reservationData)
@@ -83,12 +80,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             "code"     => 400,
-            "status"   => "Bad request",
-            "message"  => "error",
-            "response" => [
-                "errorCode"    => 400,
-                "errorMessage" => "Host not found."
-            ]
+            "status"   => "Bad Request",
+            "message"  => "User host not found.",
+            "response" => false
         ];
 
         $this->post('/api/v1/reservations', $reservationData)
@@ -131,13 +125,10 @@ class ReservationTest extends TestCase
              ->andReturn($guests);
 
         $responseJSON = [
-            "code"     => 400,
-            "status"   => "Bad request",
-            "message"  => "error",
-            "response" => [
-                "errorCode"    => 400,
-                "errorMessage" => "Could not found all guest IDs."
-            ]
+            "code"     => 409,
+            "status"   => "Conflict",
+            "message"  => "Please, verify guests IDs.",
+            "response" => false
         ];
 
         $this->post('/api/v1/reservations', $reservationData)
@@ -195,12 +186,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             "code"     => 400,
-            "status"   => "Bad request",
-            "message"  => "error",
-            "response" => [
-                "errorCode"    => 400,
-                "errorMessage" => "One or more reservations already exist."
-            ]
+            "status"   => "Bad Request",
+            "message"  => "One or more reservations already exists.",
+            "response" => false
         ];
 
         $this->post('/api/v1/reservations', $reservationData)
@@ -261,8 +249,8 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'saved',
+            'status'   => 'OK',
+            'message'  => 'success',
             'response' => true
         ];
 
@@ -287,12 +275,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode'    => 400,
-                'errorMessage' => 'Host not found.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'User host not found.',
+            'response' => false
         ];
 
         $this->get('/api/v1/users/1/reservations')
@@ -322,12 +307,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode'    => 400,
-                'errorMessage' => 'No reservation found for this user.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'Reservation not found.',
+            'response' => false
         ];
 
         $this->get('/api/v1/users/1/reservations')
@@ -368,8 +350,8 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'found',
+            'status'   => 'OK',
+            'message'  => 'success',
             'response' => [
                 'reservations' => [[
                     'reservation_id' => 1,
@@ -402,12 +384,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode'    => 400,
-                'errorMessage' => 'Reservation not found.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'Reservation not found.',
+            'response' => false
         ];
 
         $this->delete('/api/v1/reservations/1')
@@ -431,12 +410,9 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'Could not dalete this reservation.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'Could not delete this reservation.',
+            'response' => false
         ];
 
         $this->delete('/api/v1/reservations/1')
@@ -460,8 +436,8 @@ class ReservationTest extends TestCase
 
         $responseJSON = [
             'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'deleted',
+            'status'   => 'OK',
+            'message'  => 'success',
             'response' => true
         ];
 

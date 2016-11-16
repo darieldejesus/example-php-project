@@ -99,19 +99,19 @@ class ResponseFormatterTest extends TestCase
     public function test_assign_response_data_by_function() {
         $response = new ResponseFormatter();
 
-        $response->returnData(true);
+        $response->withReturnData(true);
         $this->assertTrue($response->toArray()['response']);
 
-        $response->returnData([]);
+        $response->withReturnData([]);
         $this->assertSame($response->toArray()['response'], []);
 
-        $response->returnData(['test']);
+        $response->withReturnData(['test']);
         $this->assertSame($response->toArray()['response'], ['test']);
 
-        $response->returnData(false);
+        $response->withReturnData(false);
         $this->assertSame($response->toArray()['response'], false);
 
-        $response->returnData('this_is_a_test');
+        $response->withReturnData('this_is_a_test');
         $this->assertSame($response->toArray()['response'], 'this_is_a_test');
     }
 
