@@ -40,11 +40,19 @@ Steps:
 
 5.  After virtual dev environment is setup, login into the machine to confirm it is working.
     ```sh
-    $ cd vagrant/
+    $ cd example-php-project/vagrant/
     $ vagrant ssh
     $ cd /home/www
     ```
     Here you would see all files related to the project.
+
+6. In order to access to the API via a local domain, you need to add this entry in the ***hosts*** file:
+
+OSX/Linux
+```sh
+$ sudo su
+$ echo '192.168.1.123   reservation.io' >> /etc/hosts
+```
 
 ## How to use the API
 
