@@ -46,12 +46,9 @@ class UserTest extends TestCase
 
         $responseJSON = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'User not found.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'User not found.',
+            'response' => false
         ];
         $this->json($method, $url, $data)
             ->seeJsonEquals($responseJSON);
@@ -88,12 +85,9 @@ class UserTest extends TestCase
 
         $responseJSON = [
             "code"     => 400,
-            "status"   => "Bad request",
-            "message"  => "error",
-            "response" => [
-                "errorCode"    => 400,
-                "errorMessage" => "Please, check required fields."
-            ]
+            "status"   => "Bad Request",
+            "message"  => "Please, check required fields.",
+            "response" => false
         ];
 
         $this->post('/api/v1/users', $userDataWithoutName)
@@ -126,13 +120,10 @@ class UserTest extends TestCase
              ->andReturn(TRUE);
 
         $responseJSON = [
-            'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'User email already exists.'
-            ]
+            'code'     => 409,
+            'status'   => 'Conflict',
+            'message'  => 'User email already exists.',
+            'response' => false
         ];
 
         $this->post('/api/v1/users', $userData)
@@ -174,7 +165,7 @@ class UserTest extends TestCase
     
         $responseJSON = [
             'code'     => 200,
-            'status'   => 'ok',
+            'status'   => 'OK',
             'message'  => 'success',
             'response' => ['user']
         ];
@@ -210,7 +201,7 @@ class UserTest extends TestCase
     
         $responseJSON = [
             'code'     => 200,
-            'status'   => 'ok',
+            'status'   => 'OK',
             'message'  => 'success',
             'response' => ['user']
         ];
@@ -243,12 +234,9 @@ class UserTest extends TestCase
 
         $expectedResponse = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'Values cannot be empty.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'Please, verify required fields.',
+            'response' => false
         ];
         $this->json('PUT', '/api/v1/users/1', ['first_name' => ''])
              ->seeJsonEquals($expectedResponse);
@@ -276,13 +264,10 @@ class UserTest extends TestCase
              ->andReturn($fakeUser);
 
         $expectedResponse = [
-            'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'Email already exists.'
-            ]
+            'code'     => 409,
+            'status'   => 'Conflict',
+            'message'  => 'User email already exists.',
+            'response' => false
         ];
 
         $this->json('PUT', '/api/v1/users/321', ['email' => 'test@test'])
@@ -306,12 +291,9 @@ class UserTest extends TestCase
 
         $expectedResponse = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'Could not update this user.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'Could not update this user.',
+            'response' => false
         ];
 
         $this->json('PUT', '/api/v1/users/321', ['name' => 'test test'])
@@ -338,8 +320,8 @@ class UserTest extends TestCase
 
         $expectedResponse = [
             'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'updated',
+            'status'   => 'OK',
+            'message'  => 'success',
             'response' => ['user']
         ];
 
@@ -374,12 +356,9 @@ class UserTest extends TestCase
 
         $expectedResponse = [
             'code'     => 400,
-            'status'   => 'Bad request',
-            'message'  => 'error',
-            'response' => [
-                'errorCode' => 400,
-                'errorMessage' => 'Could not dalete this user.'
-            ]
+            'status'   => 'Bad Request',
+            'message'  => 'Could not delete this user.',
+            'response' => false
         ];
 
         $this->json('DELETE', '/api/v1/users/321')
@@ -403,8 +382,8 @@ class UserTest extends TestCase
 
         $expectedResponse = [
             'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'deleted',
+            'status'   => 'OK',
+            'message'  => 'success',
             'response' => true
         ];
 

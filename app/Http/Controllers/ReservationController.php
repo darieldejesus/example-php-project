@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Helpers\ResponseFormatter as RF;
 use App\Http\Requests;
 use App\Reservation;
 use App\User;
@@ -48,28 +50,18 @@ class ReservationController extends Controller
 
         // Verify required data is valid.
         if ($validator->fails()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'Check required fields and host id.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Please, verify required fields.')
+                     ->parse();
         }
 
         $host = $this->User::find($data['host_id']);
         if (!$host) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'Host not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('User host not found.')
+                     ->parse();
         }
 
         // Fisrt, try to retrieve the given IDs.
@@ -80,33 +72,24 @@ class ReservationController extends Controller
         $foundIDs = array_pluck($guests->toArray(), 'id');
         $diff = array_diff($data['guest_ids'], $foundIDs);
         if ($diff) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'Could not found all guest IDs.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withConflict()
+                     ->withMessage('Please, verify guests IDs.')
+                     ->parse();
         }
 
         // Then, we need to confirm reservations does not exists
         // With the same host_id and guest_id
-        $reservations = $this->Reservation::where('user_id_host', $data['host_id'])
-                                ->whereIn('user_id_guest', $data['guest_ids'])
-                                ->get();
+        $reservations = 
+                    $this->Reservation::where('user_id_host', $data['host_id'])
+                         ->whereIn('user_id_guest', $data['guest_ids'])
+                         ->get();
 
         if (!$reservations->isEmpty()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'One or more reservations already exist.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('One or more reservations already exists.')
+                     ->parse();
         }
 
         $guests->each(function($guest, $key) use ($data) {
@@ -116,12 +99,8 @@ class ReservationController extends Controller
             $success = $newReservation->save();
         });
 
-        return response()->json([
-            'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'saved',
-            'response' => true
-        ]);
+        return RF::withData(true)
+                 ->parse();
     }
 
     /**
@@ -134,29 +113,19 @@ class ReservationController extends Controller
     {
         $host = $this->Reservation::where('user_id_host', $id)->first();
         if (!$host) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'Host not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('User host not found.')
+                     ->parse();
         }
 
         $hostReservations = $this->Reservation::where('user_id_host', $id)
                                  ->get();
         if ($hostReservations->isEmpty()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'No reservation found for this user.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Reservation not found.')
+                     ->parse();
         }
 
         $guests = [];
@@ -167,15 +136,8 @@ class ReservationController extends Controller
                 'guest'          => $reservation->user_id_guest
             ];
         }
-
-        return response()->json([
-            'code'     => 200,
-            'status'   => 'ok',
-            'message'  => 'found',
-            'response' => [
-                'reservations' => $guests
-            ]
-        ]);
+        return RF::withData(['reservations' => $guests])
+                 ->parse();
     }
 
     /**
@@ -188,34 +150,20 @@ class ReservationController extends Controller
     {
         $reservation = $this->Reservation::find($id);
         if (!$reservation) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode'    => 400,
-                    'errorMessage' => 'Reservation not found.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Reservation not found.')
+                     ->parse();
         }
 
         if (!$reservation->delete()) {
-            return response()->json([
-                'code'     => 400,
-                'status'   => 'Bad request',
-                'message'  => 'error',
-                'response' => [
-                    'errorCode' => 400,
-                    'errorMessage' => 'Could not dalete this reservation.'
-                ]
-            ], 400);
+            return RF::withData(false)
+                     ->withBadRequest()
+                     ->withMessage('Could not delete this reservation.')
+                     ->parse();
         } else {
-            return response()->json([
-                'code'     => 200,
-                'status'   => 'ok',
-                'message'  => 'deleted',
-                'response' => true
-            ]);
+            return RF::withData(true)
+                 ->parse();
         }
     }
 }
