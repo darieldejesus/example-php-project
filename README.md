@@ -45,3 +45,212 @@ Steps:
     $ cd /home/www
     ```
     Here you would see all files related to the project.
+
+## How to use the API
+
+Basically the API contains two main entities (***User*** and ***Reservation***) and you can manage them using these endpoints:
+
+|URI|Method|Action|
+|---|---|---|
+|/api/v1/users|**POST**|Create a new User|
+|/api/v1/users/[id]|**GET**|Return an User by [id]|
+|/api/v1/users/[id]|**PUT**|Update an User by [id]|
+|/api/v1/users/[id]|**DELETE**|Remove an User by [id]|
+|/api/v1/users/[id]/reservations|**GET**|Return all reservations by User [id]|
+|/api/v1/reservations|**POST**|Create a new Reservation|
+|/api/v1/reservations/[id]|**DELETE**|Remove a Reservation by [id]|
+|/api/v1/users/recommendations/[id]|**GET**|Return all users around User by [id]|
+
+### POST /api/v1/users
+Create an User: POST http://reservation.io/api/v1/users
+
+Request body:
+```json
+{
+ "email" : "test@company.com",  
+ "name" : "John Doe",  
+ "first_name" : "John",  
+ "last_name" : "Doe Curtis",
+ "age" : 15,
+ "host" : false,
+ "birth_date": "1979-06-09" 
+}
+```
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": {
+    "email": "test@company.com",
+    "name": "John Doe",
+    "first_name": "John",
+    "last_name": "Doe Curtis",
+    "age": 15,
+    "host": false,
+    "birth_date": "1979-06-09",
+    "updated_at": "2016-11-16 22:59:36",
+    "created_at": "2016-11-16 22:59:36",
+    "id": 31121
+  }
+}
+```
+
+### GET /api/v1/users/[id]
+Return an User by id: GET 
+
+Response body: http://reservation.io/api/v1/users/31121
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": {
+    "id": 31121,
+    "first_name": "John",
+    "last_name": "Doe Curtis",
+    "age": 15,
+    "birth_date": "1979-06-09",
+    "host": 0,
+    "name": "John Doe",
+    "email": "test@company.com",
+    "created_at": "2016-11-16 22:59:36",
+    "updated_at": "2016-11-16 22:59:36",
+    "latitude": "",
+    "longitude": ""
+  }
+}
+```
+
+### PUT /api/v1/users/[id]
+Update an user property: PUT http://reservation.io/api/v1/users/31121
+
+Request body:
+```json
+{
+ "name" : "John Doe",  
+ "first_name" : "John"
+}
+```
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": {
+    "id": 31121,
+    "first_name": "John",
+    "last_name": "Doe Curtis",
+    "age": 15,
+    "birth_date": "1979-06-09",
+    "host": 0,
+    "name": "John Doe",
+    "email": "test@company.com",
+    "created_at": "2016-11-16 22:59:36",
+    "updated_at": "2016-11-16 22:59:36",
+    "latitude": "",
+    "longitude": ""
+  }
+}
+```
+
+### DELETE /api/v1/users/[id]
+Remove an User: DELETE http://reservation.io/api/v1/users/31121
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": true
+}
+```
+
+### POST /api/v1/reservations
+Create a new Reservation: POST http://reservation.io/api/v1/reservations
+
+Request body:
+```json
+{
+ "host_id": 31122,
+ "guest_ids": [22117, 22118, 22119]
+}
+```
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": true
+}
+```
+
+### GET /api/v1/users/[id]/reservations
+Get the reservations from an User: GET http://reservation.io/api/v1/users/31122/reservations
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": {
+    "reservations": [
+      {
+        "reservation_id": 15,
+        "host": 31122,
+        "guest": 22117
+      },
+      {
+        "reservation_id": 16,
+        "host": 31122,
+        "guest": 22118
+      },
+      {
+        "reservation_id": 17,
+        "host": 31122,
+        "guest": 22119
+      }
+    ]
+  }
+}
+```
+
+### DELETE /api/v1/reservations/[id]
+Remove a Reservation: DELETE http://reservation.io/api/v1/reservations/15
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": true
+}
+```
+
+### GET /api/v1/users/recomendations/[id]
+Return all Users arround current User by id: GET http://reservation.io/api/v1/users/recommendations/22129
+
+Response body:
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "message": "success",
+  "response": {
+    "user_ids": [
+      22121,
+      22125,
+      ...
+    ]
+  }
+}
+```
