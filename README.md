@@ -54,6 +54,15 @@ $ sudo su
 $ echo '192.168.1.123   reservation.io' >> /etc/hosts
 ```
 
+7. The latest step is run Unit tests to confirm everything is working as expected:
+
+```sh
+$ cd example-php-project/vagrant/
+$ vagrant ssh
+$ cd /home/www
+$ phpunit
+```
+
 ## How to use the API
 
 Basically the API contains two main entities (***User*** and ***Reservation***) and you can manage them using these endpoints:
