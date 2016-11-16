@@ -116,9 +116,9 @@ Response body:
 ```
 
 ### GET /api/v1/users/[id]
-Return an User by id: GET 
+Return an User by id: GET http://reservation.io/api/v1/users/31121
 
-Response body: http://reservation.io/api/v1/users/31121
+Response body:
 ```json
 {
   "code": 200,
