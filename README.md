@@ -48,20 +48,20 @@ Steps:
 
 6. In order to access to the API via a local domain, you need to add this entry in the ***hosts*** file:
 
-OSX/Linux
-```sh
-$ sudo su
-$ echo '192.168.1.123   reservation.io' >> /etc/hosts
-```
+    OSX/Linux
+    ```sh
+    $ sudo su
+    $ echo '192.168.1.123   reservation.io' >> /etc/hosts
+    ```
 
 7. The latest step is run Unit tests to confirm everything is working as expected:
 
-```sh
-$ cd example-php-project/vagrant/
-$ vagrant ssh
-$ cd /home/www
-$ phpunit
-```
+    ```sh
+    $ cd example-php-project/vagrant/
+    $ vagrant ssh
+    $ cd /home/www
+    $ phpunit
+    ```
 
 ## How to use the API
 
