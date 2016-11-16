@@ -7,6 +7,9 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UserTest extends TestCase
 {
+    /**
+     * @var Mockery $userMock Mock to be used as User model.
+     */
     protected $userMock;
 
     /**

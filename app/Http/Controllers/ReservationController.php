@@ -11,6 +11,28 @@ use Validator;
 class ReservationController extends Controller
 {
     /**
+     * @var App\User $User Eloquent model which represent User entity.
+     */
+    protected $User;
+
+    /**
+     * @var App\Reservation $Reservation Eloquent model 
+                            which represent Reservation entity.
+     */
+    protected $Reservation;
+
+    /**
+     * Construct to inject models to the class
+     * The main purpose of this is unittest :(
+     *
+     * @param App\User $userModel Model to be used in the class.
+     */
+    public function __construct(User $user, Reservation $reservation) {
+        $this->User = $user;
+        $this->Reservation = $reservation;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -20,7 +42,7 @@ class ReservationController extends Controller
     {
         $data = $request->all();
         $validator = Validator::make($data, [
-            'host_id'   => 'required|integer|exists:users,id',
+            'host_id'   => 'required|integer',
             'guest_ids' => 'required|array'
         ]);
 
@@ -37,15 +59,26 @@ class ReservationController extends Controller
             ], 400);
         }
 
+        $host = $this->User::find($data['host_id']);
+        if (!$host) {
+            return response()->json([
+                'code'     => 400,
+                'status'   => 'Bad request',
+                'message'  => 'error',
+                'response' => [
+                    'errorCode'    => 400,
+                    'errorMessage' => 'Host not found.'
+                ]
+            ], 400);
+        }
+
         // Fisrt, try to retrieve the given IDs.
-        $guests = User::whereIn('id', $data['guest_ids'])
+        $guests = $this->User::whereIn('id', $data['guest_ids'])
                         ->select(['id'])
                         ->get();
-
         // Then, confirm if returned IDs are the same.
         $foundIDs = array_pluck($guests->toArray(), 'id');
         $diff = array_diff($data['guest_ids'], $foundIDs);
-
         if ($diff) {
             return response()->json([
                 'code'     => 400,
@@ -60,7 +93,7 @@ class ReservationController extends Controller
 
         // Then, we need to confirm reservations does not exists
         // With the same host_id and guest_id
-        $reservations = Reservation::where('user_id_host', $data['host_id'])
+        $reservations = $this->Reservation::where('user_id_host', $data['host_id'])
                                 ->whereIn('user_id_guest', $data['guest_ids'])
                                 ->get();
 
@@ -99,22 +132,21 @@ class ReservationController extends Controller
      */
     public function show($id)
     {
-        $validator = Validator::make(['id' => $id], [
-            'id'   => 'required|integer|exists:reservations,user_id_host'
-        ]);
-        if ($validator->fails()) {
+        $host = $this->Reservation::where('user_id_host', $id)->first();
+        if (!$host) {
             return response()->json([
                 'code'     => 400,
                 'status'   => 'Bad request',
                 'message'  => 'error',
                 'response' => [
                     'errorCode'    => 400,
-                    'errorMessage' => 'User or reservation not found.'
+                    'errorMessage' => 'Host not found.'
                 ]
             ], 400);
         }
 
-        $hostReservations = Reservation::where('user_id_host', $id)->get();
+        $hostReservations = $this->Reservation::where('user_id_host', $id)
+                                 ->get();
         if ($hostReservations->isEmpty()) {
             return response()->json([
                 'code'     => 400,
@@ -131,9 +163,11 @@ class ReservationController extends Controller
         foreach ($hostReservations as $reservation) {
             $guests[] = [
                 'reservation_id' => $reservation->id,
-                'guest'          => $reservation->guest
+                'host'           => $reservation->user_id_host,
+                'guest'          => $reservation->user_id_guest
             ];
         }
+
         return response()->json([
             'code'     => 200,
             'status'   => 'ok',
@@ -152,10 +186,8 @@ class ReservationController extends Controller
      */
     public function destroy($id)
     {
-        $validator = Validator::make(['id' => $id], [
-            'id'   => 'required|integer|exists:reservations'
-        ]);
-        if ($validator->fails()) {
+        $reservation = $this->Reservation::find($id);
+        if (!$reservation) {
             return response()->json([
                 'code'     => 400,
                 'status'   => 'Bad request',
@@ -166,7 +198,7 @@ class ReservationController extends Controller
                 ]
             ], 400);
         }
-        $reservation = Reservation::find($id);
+
         if (!$reservation->delete()) {
             return response()->json([
                 'code'     => 400,
