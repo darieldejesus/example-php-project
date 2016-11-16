@@ -7,12 +7,26 @@ use App\Http\Requests;
 use App\User;
 use Illuminate\Http\Request;
 use Validator;
-use DB;
 /**
  * Class to handle Users.
  */
 class UserController extends Controller
 {
+
+    /**
+     * @var App\User $User Eloquent model which represent User entity.
+     */
+    protected $User;
+
+    /**
+     * Construct to inject models to the class
+     * The main purpose of this is unittest :(
+     *
+     * @param App\User $userModel Model to be used in the class.
+     */
+    public function __construct(User $userModel) {
+        $this->User = $userModel;
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -31,7 +45,6 @@ class UserController extends Controller
             'host'       => 'required',
             'email'      => 'required'
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'code'     => 400,
@@ -44,8 +57,7 @@ class UserController extends Controller
             ], 400);
         }
 
-        $exists = User::where('email', $data['email'])->first();
-
+        $exists = $this->User::where('email', $data['email'])->first();
         if ($exists) {
             return response()->json([
                 'code'     => 400,
@@ -58,7 +70,7 @@ class UserController extends Controller
             ], 400);
         }
 
-        $user = User::create($data);
+        $user = $this->User::create($data);
         return response()->json([
             'code'     => 200,
             'status'   => 'ok',
@@ -75,7 +87,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::find((int) $id);
+        $user = $this->User::find((int) $id);
         if (!$user) {
             return response()->json([
                 'code'     => 400,
@@ -105,7 +117,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::find((int) $id);
+        $user = $this->User::find((int) $id);
         if (!$user) {
             return response()->json([
                 'code'     => 400,
@@ -142,7 +154,7 @@ class UserController extends Controller
         }
 
         if (array_key_exists('email', $data)) {
-            $exists = User::where('email', $data['email'])->first();
+            $exists = $this->User::where('email', $data['email'])->first();
             if ($exists && $exists->id != $id) {
                 return response()->json([
                     'code'     => 400,
@@ -185,7 +197,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find((int) $id);
+        $user = $this->User::find((int) $id);
         if (!$user) {
             return response()->json([
                 'code'     => 400,
