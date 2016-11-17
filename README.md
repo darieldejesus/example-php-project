@@ -38,11 +38,14 @@ Steps:
     ```
     After this step, ***Vagrant*** would setup the virtual dev environment automatically.
 
-5.  After virtual dev environment is setup, login into the machine to confirm it is working.
+5.  After virtual dev environment is setup, login into the machine to confirm it is working. Then, execute some required configurations.
     ```sh
     $ cd example-php-project/vagrant/
     $ vagrant ssh
     $ cd /home/www
+    # Required config
+    $ php artisan migrate
+    $ php artisan key:generate
     ```
     Here you would see all files related to the project.
 
